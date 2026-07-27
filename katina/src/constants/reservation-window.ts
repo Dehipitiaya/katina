@@ -1,0 +1,2 @@
+export const RESERVATION_START_DATE = "2026-07-29";
+export const RESERVATION_END_DATE = "2026-10-25";
