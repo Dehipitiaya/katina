@@ -1,7 +1,21 @@
-import { endOfMonth, startOfDay, startOfMonth, addDays } from "date-fns";
+import {
+  addDays,
+  differenceInCalendarDays,
+  endOfMonth,
+  isAfter,
+  isBefore,
+  parseISO,
+  startOfDay,
+  startOfMonth,
+} from "date-fns";
 
 import { MAX_EVENTS_PER_DAY } from "@/constants/events";
 import {
+  RESERVATION_END_DATE,
+  RESERVATION_START_DATE,
+} from "@/constants/reservation-window";
+import {
+  dateKeyToUtcDate,
   isAfterReservationEndDate,
   isBeforeReservationStartDate,
   isPastDateKey,
@@ -11,13 +25,17 @@ import {
   createReservation,
   deleteReservation,
   findReservationByDateAndEvent,
+  findReservationById,
   listRecentReservations,
   listReservations,
+  listReservationsForBackup,
   listReservationsForMonth,
+  mergeReservationsFromBackup,
   updateReservation,
   countReservationsBetween,
 } from "@/repositories/reservation-repository";
 import type { ReservationRecord, ReservationSummary } from "@/types/reservation";
+import type { BackupFileInput } from "@/validators/backup";
 import type { ReservationCreateInput, ReservationUpdateInput } from "@/validators/reservation";
 
 function normalizePhone(phone: string) {
@@ -103,19 +121,62 @@ export async function getAdminReservations() {
   return reservations.map(toRecord);
 }
 
+export async function createReservationsBackup() {
+  const reservations = await listReservationsForBackup();
+
+  return {
+    app: "katina-responsibility-calendar" as const,
+    version: 1 as const,
+    exportedAt: new Date().toISOString(),
+    reservations: reservations.map(toRecord),
+  };
+}
+
+export async function restoreReservationsBackup(input: BackupFileInput) {
+  const result = await mergeReservationsFromBackup(input.reservations);
+
+  return {
+    reservations: result.reservations.map(toRecord),
+    importedCount: result.importedCount,
+    skippedCount: result.skippedCount,
+  };
+}
+
 export async function getRecentAdminReservations() {
   const reservations = await listRecentReservations();
   return reservations.map(toRecord);
 }
 
 export async function editReservation(id: string, input: ReservationUpdateInput) {
+  const current = await findReservationById(id);
+
+  if (!current) {
+    throw new Error("Reservation not found.");
+  }
+
+  const nextDate = input.date ?? toDateKey(current.date);
+  const nextEventNumber = input.eventNumber ?? current.eventNumber;
+  const existing = await findReservationByDateAndEvent(nextDate, nextEventNumber);
+
+  if (existing && existing.id !== id) {
+    throw new Error("That date and event already has a reservation.");
+  }
+
   const reservation = await updateReservation(id, {
-    name: input.name,
-    phone: normalizePhone(input.phone),
-    batch: input.batch,
-    accommodationType: input.accommodationType,
+    ...(input.date ? { date: input.date } : {}),
+    ...(input.eventNumber ? { eventNumber: input.eventNumber } : {}),
+    ...(input.name ? { name: input.name } : {}),
+    ...(input.phone ? { phone: normalizePhone(input.phone) } : {}),
+    ...(input.batch ? { batch: input.batch } : {}),
+    ...(input.accommodationType
+      ? { accommodationType: input.accommodationType }
+      : {}),
     boardingDetails:
-      input.accommodationType === "BOARDING" ? input.boardingDetails : null,
+      input.accommodationType === "HOSTEL"
+        ? null
+        : input.boardingDetails === undefined
+          ? undefined
+          : input.boardingDetails,
   });
 
   return toRecord(reservation);
@@ -128,26 +189,45 @@ export async function removeReservation(id: string) {
 
 export async function getDashboardStats() {
   const today = startOfDay(new Date());
-  const tomorrow = addDays(today, 1);
   const monthStart = startOfMonth(today);
   const monthEnd = addDays(endOfMonth(today), 1);
-  const currentMonthDays = endOfMonth(today).getDate();
-  const totalSlotsThisMonth = currentMonthDays * MAX_EVENTS_PER_DAY;
-  const [totalReservations, reservationsToday, reservationsThisMonth] =
+  const reservationStart = parseISO(RESERVATION_START_DATE);
+  const reservationEnd = parseISO(RESERVATION_END_DATE);
+  const activeStart = isBefore(today, reservationStart) ? reservationStart : today;
+  const hasActiveWindow = !isAfter(activeStart, reservationEnd);
+  const availableWindowDays = hasActiveWindow
+    ? differenceInCalendarDays(reservationEnd, activeStart) + 1
+    : 0;
+  const availableWindowSlots = availableWindowDays * MAX_EVENTS_PER_DAY;
+  const fullWindowDays =
+    differenceInCalendarDays(reservationEnd, reservationStart) + 1;
+  const fullWindowSlots = fullWindowDays * MAX_EVENTS_PER_DAY;
+  const [totalReservations, reservationsThisMonth, reservationsInActiveWindow] =
     await Promise.all([
-      countReservationsBetween(new Date("2020-01-01T00:00:00.000Z"), new Date("2100-01-01T00:00:00.000Z")),
-      countReservationsBetween(today, tomorrow),
+      countReservationsBetween(
+        dateKeyToUtcDate(RESERVATION_START_DATE),
+        dateKeyToUtcDate(toDateKey(addDays(reservationEnd, 1))),
+      ),
       countReservationsBetween(monthStart, monthEnd),
+      hasActiveWindow
+        ? countReservationsBetween(
+            dateKeyToUtcDate(toDateKey(activeStart)),
+            dateKeyToUtcDate(toDateKey(addDays(reservationEnd, 1))),
+          )
+        : Promise.resolve(0),
     ]);
 
   return {
     totalReservations,
-    reservationsToday,
+    reservationsToday: 0,
     reservationsThisMonth,
-    availableResponsibilities: Math.max(totalSlotsThisMonth - reservationsThisMonth, 0),
+    availableResponsibilities: Math.max(
+      availableWindowSlots - reservationsInActiveWindow,
+      0,
+    ),
     occupancyPercentage:
-      totalSlotsThisMonth === 0
+      fullWindowSlots === 0
         ? 0
-        : Math.round((reservationsThisMonth / totalSlotsThisMonth) * 100),
+        : Math.round((totalReservations / fullWindowSlots) * 100),
   };
 }

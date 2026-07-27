@@ -49,8 +49,25 @@ export const reservationCreateSchema = reservationBaseSchema
   })
   .superRefine(validateBoardingDetails);
 
-export const reservationUpdateSchema =
-  reservationBaseSchema.superRefine(validateBoardingDetails);
+export const reservationUpdateSchema = reservationBaseSchema
+  .extend({
+    date: dateSchema,
+    eventNumber: eventNumberSchema,
+  })
+  .partial()
+  .superRefine((value, context) => {
+    if (
+      value.accommodationType === "BOARDING" &&
+      value.boardingDetails !== undefined &&
+      value.boardingDetails.length < 2
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["boardingDetails"],
+        message: "Enter the boarding name or address.",
+      });
+    }
+  });
 
 export const monthQuerySchema = z.object({
   year: z.coerce.number().int().min(2020).max(2100),

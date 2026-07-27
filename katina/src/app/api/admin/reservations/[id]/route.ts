@@ -1,3 +1,5 @@
+import { Prisma } from "@/generated/prisma/client";
+
 import { fail, ok, zodErrors } from "@/lib/api-response";
 import { isAdminAuthenticated } from "@/lib/auth";
 import { editReservation, removeReservation } from "@/services/reservation-service";
@@ -15,14 +17,37 @@ export async function PUT(
   const parsed = reservationUpdateSchema.safeParse(body);
 
   if (!parsed.success) {
-    return fail("Check the reservation details.", { status: 422 }, zodErrors(parsed.error));
+    const errors = zodErrors(parsed.error);
+    const firstError = Object.values(errors).flat()[0];
+
+    return fail(
+      firstError
+        ? `Check the reservation details: ${firstError}`
+        : "Check the reservation details.",
+      { status: 422 },
+      errors,
+    );
   }
 
   try {
     const { id } = await params;
     return ok(await editReservation(id, parsed.data), undefined, "Reservation updated.");
-  } catch {
-    return fail("Reservation could not be updated.", { status: 400 });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return fail("That date and event already has a reservation.", {
+        status: 409,
+      });
+    }
+
+    return fail(
+      error instanceof Error
+        ? error.message
+        : "Reservation could not be updated.",
+      { status: 400 },
+    );
   }
 }
 
