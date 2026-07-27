@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId } from "react";
+import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,6 +11,7 @@ import type { z } from "zod";
 import { RESPONSIBILITY_EVENTS, type EventNumber } from "@/constants/events";
 import { GlassButton } from "@/components/ui/glass-button";
 import { GlassInput, GlassTextarea } from "@/components/ui/glass-input";
+import { cn } from "@/lib/utils";
 import {
   reservationCreateSchema,
   type ReservationCreateInput,
@@ -22,7 +23,7 @@ export function ReservationDialog({
   onOpenChange,
   onReserved,
 }: {
-  selection: { date: string; eventNumber: EventNumber } | null;
+  selection: { date: string; availableEventNumbers: EventNumber[] } | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onReserved: () => void;
@@ -35,7 +36,7 @@ export function ReservationDialog({
     resolver: zodResolver(reservationCreateSchema),
     defaultValues: {
       date: selection?.date ?? "",
-      eventNumber: selection?.eventNumber ?? 1,
+      eventNumber: selection?.availableEventNumbers[0] ?? 1,
       name: "",
       phone: "",
       batch: "",
@@ -45,6 +46,7 @@ export function ReservationDialog({
   });
   const titleId = useId();
   const descriptionId = useId();
+  const [selectedEventNumbers, setSelectedEventNumbers] = useState<EventNumber[]>([]);
 
   useEffect(() => {
     if (!open) {
@@ -53,7 +55,7 @@ export function ReservationDialog({
 
     form.reset({
       date: selection?.date ?? "",
-      eventNumber: selection?.eventNumber ?? 1,
+      eventNumber: selection?.availableEventNumbers[0] ?? 1,
       name: "",
       phone: "",
       batch: "",
@@ -109,27 +111,51 @@ export function ReservationDialog({
     control: form.control,
     name: "accommodationType",
   });
-  const eventName = selection
-    ? RESPONSIBILITY_EVENTS[selection.eventNumber - 1].name
-    : "";
+  const availableEventNumbers = selection?.availableEventNumbers ?? [];
 
   async function onSubmit(values: ReservationCreateInput) {
-    const response = await fetch("/api/reservations", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
-    const result = await response.json();
-
-    if (!result.success) {
+    if (selectedEventNumbers.length === 0) {
       form.setError("root", {
-        message: result.message || "Reservation could not be saved.",
+        message: "Choose at least one responsibility.",
       });
       return;
     }
 
+    for (const eventNumber of selectedEventNumbers) {
+      const response = await fetch("/api/reservations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...values, eventNumber }),
+      });
+      const result = await response.json();
+
+      if (!result.success) {
+        form.setError("root", {
+          message: result.message || "Reservation could not be saved.",
+        });
+        onReserved();
+        return;
+      }
+    }
+
     onReserved();
     onOpenChange(false);
+  }
+
+  function toggleEventNumber(eventNumber: EventNumber) {
+    setSelectedEventNumbers((current) =>
+      current.includes(eventNumber)
+        ? current.filter((value) => value !== eventNumber)
+        : [...current, eventNumber],
+    );
+  }
+
+  function selectAllAvailableEvents() {
+    setSelectedEventNumbers(
+      selectedEventNumbers.length === availableEventNumbers.length
+        ? []
+        : availableEventNumbers,
+    );
   }
 
   if (!open || typeof document === "undefined") {
@@ -164,7 +190,7 @@ export function ReservationDialog({
           </h2>
           <p id={descriptionId} className="text-sm text-[#dbc6aa]">
             {selection
-              ? `${eventName} on ${format(parseISO(selection.date), "EEEE, MMMM d")}`
+              ? `Choose responsibilities on ${format(parseISO(selection.date), "EEEE, MMMM d")}`
               : "Choose an available responsibility."}
           </p>
         </div>
@@ -172,6 +198,50 @@ export function ReservationDialog({
         <form className="relative z-10 grid gap-4" onSubmit={form.handleSubmit(onSubmit)}>
           <input type="hidden" {...form.register("date")} />
           <input type="hidden" {...form.register("eventNumber")} />
+
+          <fieldset className="grid gap-2 text-sm font-medium">
+            <legend>Responsibilities</legend>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={selectAllAvailableEvents}
+                className="rounded-full border border-white/24 bg-white/8 px-3 py-1 text-xs text-[#fff2da] shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] transition hover:bg-white/14 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#66b3ff]/30"
+              >
+                {selectedEventNumbers.length === availableEventNumbers.length
+                  ? "Clear all"
+                  : "Select all"}
+              </button>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {RESPONSIBILITY_EVENTS.map((event) => {
+                const isAvailable = availableEventNumbers.includes(event.number);
+                const isChecked = selectedEventNumbers.includes(event.number);
+
+                return (
+                  <label
+                    key={event.number}
+                    className={cn(
+                      "flex min-h-11 items-center gap-3 rounded-[18px] border px-3 py-2 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-[16px] transition",
+                      isAvailable
+                        ? "cursor-pointer border-white/24 bg-white/8 text-white has-[:checked]:border-[#b6e56f]/70 has-[:checked]:bg-[#b6e56f]/16"
+                        : "cursor-not-allowed border-white/10 bg-white/4 text-white/42",
+                    )}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      disabled={!isAvailable}
+                      onChange={() => toggleEventNumber(event.number)}
+                      className="size-4 accent-[#b6e56f]"
+                    />
+                    <span>
+                      {event.number}. {event.name}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
 
           <label className="grid gap-2 text-sm font-medium">
             Name
@@ -185,7 +255,11 @@ export function ReservationDialog({
 
           <label className="grid gap-2 text-sm font-medium">
             Phone number
-            <GlassInput autoComplete="tel" {...form.register("phone")} />
+            <GlassInput
+              autoComplete="tel"
+              placeholder="0771234567"
+              {...form.register("phone")}
+            />
             {form.formState.errors.phone && (
               <span className="text-xs text-[#ff3b30]">
                 {form.formState.errors.phone.message}
@@ -195,7 +269,7 @@ export function ReservationDialog({
 
           <label className="grid gap-2 text-sm font-medium">
             Batch
-            <GlassInput {...form.register("batch")} />
+            <GlassInput placeholder="E20" {...form.register("batch")} />
             {form.formState.errors.batch && (
               <span className="text-xs text-[#ff3b30]">
                 {form.formState.errors.batch.message}

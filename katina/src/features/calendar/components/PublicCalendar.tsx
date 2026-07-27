@@ -9,6 +9,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { RESPONSIBILITY_EVENTS, type EventNumber } from "@/constants/events";
 import { getHolidayName } from "@/constants/holidays";
 import { buildCalendarGrid } from "@/lib/dates";
+import { cn } from "@/lib/utils";
 import type { ReservationSummary } from "@/types/reservation";
 import { CalendarDayCard } from "@/features/calendar/components/CalendarDayCard";
 import { ReservationDialog } from "@/features/reservation/components/ReservationDialog";
@@ -22,8 +23,10 @@ export function PublicCalendar({
   const [reservations, setReservations] = useState(initialReservations);
   const [selection, setSelection] = useState<{
     date: string;
-    eventNumber: EventNumber;
+    availableEventNumbers: EventNumber[];
   } | null>(null);
+  const [highlightedEventNumber, setHighlightedEventNumber] =
+    useState<EventNumber | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const year = cursor.getFullYear();
@@ -108,16 +111,28 @@ export function PublicCalendar({
 
       <GlassCard className="p-4 sm:p-6">
         <div className="mb-5 grid gap-4 text-sm text-[#6d5036] dark:text-[#dbc6aa]">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="grid gap-3 text-center">
             <p>Green is available. Red is already reserved.</p>
-            <div className="flex flex-wrap gap-2 text-xs">
+            <div className="flex flex-wrap justify-center gap-2 text-sm">
               {RESPONSIBILITY_EVENTS.map((event) => (
-                <span
+                <button
+                  type="button"
                   key={event.number}
-                  className="rounded-full border border-white/82 bg-white/18 px-3 py-1 font-medium text-slate-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.86)] backdrop-blur-[30px] dark:border-white/20 dark:bg-white/6 dark:text-white dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]"
+                  onClick={() =>
+                    setHighlightedEventNumber((current) =>
+                      current === event.number ? null : event.number,
+                    )
+                  }
+                  aria-pressed={highlightedEventNumber === event.number}
+                  className={cn(
+                    "rounded-full border px-4 py-1.5 font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.30),0_8px_20px_rgba(0,0,0,0.14)] backdrop-blur-[16px] backdrop-saturate-[1.35] transition focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#66b3ff]/30",
+                    highlightedEventNumber === event.number
+                      ? "border-[#fff2da]/80 bg-[#fff2da]/22 text-white"
+                      : "border-white/40 bg-white/12 text-[#fff2da] hover:bg-white/18",
+                  )}
                 >
                   {event.number}. {event.name}
-                </span>
+                </button>
               ))}
             </div>
           </div>
@@ -156,7 +171,10 @@ export function PublicCalendar({
                   isAfterReservationEnd={day.isAfterReservationEnd}
                   dayTone={dayTone}
                   holidayName={holidayName}
-                  onSelect={(date, eventNumber) => setSelection({ date, eventNumber })}
+                  highlightedEventNumber={highlightedEventNumber}
+                  onSelectDay={(date, availableEventNumbers) =>
+                    setSelection({ date, availableEventNumbers })
+                  }
                 />
               );
             })()
@@ -169,6 +187,7 @@ export function PublicCalendar({
       </GlassCard>
 
       <ReservationDialog
+        key={selection?.date ?? "closed"}
         selection={selection}
         open={Boolean(selection)}
         onOpenChange={(open) => !open && setSelection(null)}
