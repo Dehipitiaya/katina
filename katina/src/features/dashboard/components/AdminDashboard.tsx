@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   Clock3,
   Download,
+  Home,
   LogOut,
   Pencil,
   Search,
@@ -303,6 +304,10 @@ export function AdminDashboard({
           </h1>
         </div>
         <div className="flex flex-wrap gap-2">
+          <GlassButton onClick={() => router.push("/")}>
+            <Home className="size-4" />
+            Home
+          </GlassButton>
           <GlassButton onClick={downloadBackup}>
             <Download className="size-4" />
             Backup
