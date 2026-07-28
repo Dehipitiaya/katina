@@ -84,6 +84,12 @@ export function PublicCalendar({
         <p className="mt-3 text-base font-medium text-[#6d5036] sm:text-xl dark:text-[#dbc6aa]">
           (මේ වර්ෂා සමයයි)
         </p>
+        <blockquote className="mt-6 max-w-3xl text-lg font-medium leading-8 text-[#3d2415] sm:text-2xl sm:leading-10 dark:text-[#fff2da]">
+          &ldquo;කල්ප ලක්ෂයක් ගත වුවද සාංඝික දානයේ විපාක අවසන් නොවේ.&rdquo;
+        </blockquote>
+        <p className="mt-2 text-sm font-medium text-[#7b5a3b] sm:text-base dark:text-[#cdb390]">
+          - භාග්‍යවත් බුදුරජාණන් වහන්සේ -
+        </p>
       </header>
 
       <div className="flex justify-center">
