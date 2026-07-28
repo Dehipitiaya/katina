@@ -77,10 +77,13 @@ export function PublicCalendar({
         Admin
       </a>
 
-      <header className="flex justify-center py-8 text-center">
+      <header className="flex flex-col items-center justify-center py-8 text-center">
         <h1 className="text-4xl font-semibold tracking-normal text-[#2e1b10] sm:text-6xl dark:text-[#fff2da]">
           අයං වස්සාන කාලෝ
         </h1>
+        <p className="mt-3 text-base font-medium text-[#6d5036] sm:text-xl dark:text-[#dbc6aa]">
+          (මේ වර්ෂා සමයයි)
+        </p>
       </header>
 
       <div className="flex justify-center">

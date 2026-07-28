@@ -17,7 +17,7 @@ export default async function AdminLoginPage() {
       <section className="mx-auto flex min-h-screen w-full max-w-md items-center px-4 py-10">
         <GlassCard className="w-full p-6 sm:p-8">
           <p className="mb-3 inline-flex rounded-full border border-white/70 bg-white/46 px-3 py-1 text-sm font-semibold text-[#007aff] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-2xl dark:border-white/14 dark:bg-white/8 dark:text-[#66b3ff] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]">
-            TriDuty Admin
+            Katina Admin
           </p>
           <h1 className="text-3xl font-semibold tracking-normal dark:text-white">
             Sign in to manage reservations.

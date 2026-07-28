@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TriDuty",
-  description: "Reserve one of three daily responsibilities with a private admin dashboard.",
+  title: "Katina",
+  description: "Reserve daily Katina responsibilities with a private admin dashboard.",
 };
 
 export default function RootLayout({
@@ -28,6 +28,14 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
     >
+      <head>
+        <link
+          rel="preload"
+          as="image"
+          href="/background-01.avif"
+          type="image/avif"
+        />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
