@@ -364,11 +364,11 @@ export function AdminDashboard({
             </span>
           </div>
 
-          <div className="reservation-scroll mt-4 grid auto-cols-[82%] grid-flow-col gap-3 overflow-x-auto pb-2 sm:auto-cols-auto sm:grid-flow-row sm:grid-cols-2 sm:overflow-visible sm:pb-0 lg:grid-cols-7">
+          <div className="reservation-scroll mt-4 grid auto-cols-[82%] grid-flow-col gap-3 overflow-x-auto pb-2 sm:auto-cols-auto sm:grid-flow-row sm:grid-cols-2 sm:overflow-visible sm:pb-0 lg:grid-cols-4 xl:grid-cols-7">
             {upcomingDays.map((day) => (
               <div
                 key={day.dateKey}
-                className="rounded-2xl border border-white/22 bg-white/7 p-3 text-sm text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_10px_26px_rgba(0,0,0,0.20)] backdrop-blur-[18px]"
+                className="min-w-0 overflow-hidden rounded-2xl border border-white/22 bg-white/7 p-3 text-sm text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_10px_26px_rgba(0,0,0,0.20)] backdrop-blur-[18px]"
               >
                 <div className="mb-3">
                   <p className="font-semibold text-[#fff2da]">
@@ -390,21 +390,21 @@ export function AdminDashboard({
                         disabled={!record}
                         onClick={() => record && setDetailRecord(record)}
                         className={cn(
-                          "rounded-xl border p-2 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#66b3ff]/30",
+                          "min-w-0 overflow-hidden rounded-xl border p-2 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#66b3ff]/30",
                           record
                             ? "border-[#8dc5df]/42 bg-white/6 hover:bg-white/10"
                             : "border-[#b6e56f]/70 bg-[#b6e56f]/14 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_0_18px_rgba(182,229,111,0.16)]",
                         )}
                       >
-                        <p className="truncate text-[11px] font-semibold text-[#dbc6aa]">
+                        <p className="min-w-0 truncate text-[11px] font-semibold text-[#dbc6aa]">
                           {eventNumber}. {event.name}
                         </p>
                         {record ? (
-                          <div className="mt-1 grid gap-0.5 text-xs">
-                            <span className="truncate font-semibold text-white">
+                          <div className="mt-1 grid min-w-0 gap-0.5 text-xs">
+                            <span className="min-w-0 truncate font-semibold text-white">
                               {record.name}
                             </span>
-                            <span className="truncate text-slate-300">
+                            <span className="min-w-0 truncate text-slate-300">
                               {record.phone}
                             </span>
                           </div>
