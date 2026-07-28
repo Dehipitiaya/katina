@@ -306,19 +306,19 @@ export function AdminDashboard({
   }
 
   return (
-    <section className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <header className="flex flex-col gap-4 py-5 md:flex-row md:items-end md:justify-between">
+    <section className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-3 py-4 sm:gap-6 sm:px-6 sm:py-6 lg:px-8">
+      <header className="flex flex-col gap-4 py-3 sm:py-5 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-4xl font-semibold tracking-normal text-[#2e1b10] dark:text-[#fff2da]">
+          <h1 className="text-3xl font-semibold tracking-normal text-[#2e1b10] sm:text-4xl dark:text-[#fff2da]">
             Admin dashboard
           </h1>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <GlassButton onClick={() => router.push("/")}>
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+          <GlassButton onClick={() => router.push("/")} className="w-full sm:w-auto">
             <Home className="size-4" />
             Home
           </GlassButton>
-          <GlassButton onClick={logout}>
+          <GlassButton onClick={logout} className="w-full sm:w-auto">
             <LogOut className="size-4" />
             Logout
           </GlassButton>
@@ -364,7 +364,7 @@ export function AdminDashboard({
             </span>
           </div>
 
-          <div className="mt-4 grid gap-3 lg:grid-cols-7">
+          <div className="reservation-scroll mt-4 grid auto-cols-[82%] grid-flow-col gap-3 overflow-x-auto pb-2 sm:auto-cols-auto sm:grid-flow-row sm:grid-cols-2 sm:overflow-visible sm:pb-0 lg:grid-cols-7">
             {upcomingDays.map((day) => (
               <div
                 key={day.dateKey}
@@ -584,7 +584,82 @@ export function AdminDashboard({
             </div>
           </div>
 
-          <div className="reservation-scroll mt-5 max-h-[68vh] overflow-y-auto overflow-x-hidden pr-2">
+          <div className="reservation-scroll mt-5 max-h-[72vh] overflow-y-auto overflow-x-hidden pr-2 md:hidden">
+            <div className="grid gap-3">
+              {filteredRecords.map((record) => (
+                <div
+                  key={record.id}
+                  className="rounded-[24px] border border-white/22 bg-[linear-gradient(145deg,rgba(255,255,255,0.12),rgba(255,255,255,0.035)_48%,rgba(255,255,255,0.07))] p-4 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_12px_30px_rgba(0,0,0,0.22)] backdrop-blur-[14px]"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-[#fff2da]">
+                        {format(parseISO(record.date), "MMM d, yyyy")}
+                      </p>
+                      <p className="mt-1 text-xs text-[#cdb390]">
+                        {record.eventNumber}.{" "}
+                        {RESPONSIBILITY_EVENTS[record.eventNumber - 1].name}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 gap-2">
+                      <GlassButton
+                        aria-label="Edit reservation"
+                        onClick={() => beginEdit(record)}
+                        className="size-9 px-0"
+                      >
+                        <Pencil className="size-4" />
+                      </GlassButton>
+                      <GlassButton
+                        aria-label="Delete reservation"
+                        tone="danger"
+                        onClick={() => setDeleteTarget(record)}
+                        className="size-9 px-0"
+                      >
+                        <Trash2 className="size-4" />
+                      </GlassButton>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
+                    {[
+                      ["Name", record.name],
+                      ["Phone", record.phone],
+                      ["Batch", record.batch],
+                      [
+                        "Stay",
+                        record.accommodationType === "HOSTEL"
+                          ? "Hostel"
+                          : "Boarding",
+                      ],
+                    ].map(([label, value]) => (
+                      <div
+                        key={label}
+                        className="rounded-2xl border border-white/12 bg-white/5 px-3 py-2"
+                      >
+                        <p className="text-[11px] text-[#cdb390]">{label}</p>
+                        <p className="mt-0.5 break-words font-medium text-white">
+                          {value}
+                        </p>
+                      </div>
+                    ))}
+                    <div className="col-span-2 rounded-2xl border border-white/12 bg-white/5 px-3 py-2">
+                      <p className="text-[11px] text-[#cdb390]">Boarding</p>
+                      <p className="mt-0.5 break-words font-medium text-white">
+                        {record.boardingDetails ?? "-"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {filteredRecords.length === 0 && (
+                <div className="rounded-2xl border border-white/20 bg-white/5 px-4 py-8 text-center text-sm text-slate-400">
+                  No reservations match the current search and filters.
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="reservation-scroll mt-5 hidden max-h-[68vh] overflow-y-auto overflow-x-hidden pr-2 md:block">
             <table className="w-full table-fixed border-separate border-spacing-y-2 text-center text-xs lg:text-sm">
               <colgroup>
                 <col className="w-[12%]" />
@@ -684,12 +759,15 @@ export function AdminDashboard({
               Download a backup or restore missing reservations from a backup file.
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <GlassButton onClick={downloadBackup}>
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+            <GlassButton onClick={downloadBackup} className="w-full sm:w-auto">
               <Download className="size-4" />
               Backup
             </GlassButton>
-            <GlassButton onClick={() => restoreInputRef.current?.click()}>
+            <GlassButton
+              onClick={() => restoreInputRef.current?.click()}
+              className="w-full sm:w-auto"
+            >
               <Upload className="size-4" />
               Restore
             </GlassButton>
