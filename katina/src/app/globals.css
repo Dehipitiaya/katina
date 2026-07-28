@@ -146,3 +146,41 @@
     transform: none;
   }
 }
+
+.reservation-scroll {
+  scrollbar-gutter: stable;
+  scrollbar-color: rgba(255, 242, 218, 0.72) rgba(255, 255, 255, 0.12);
+  scrollbar-width: thin;
+}
+
+.reservation-scroll::-webkit-scrollbar {
+  width: 14px;
+}
+
+.reservation-scroll::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.reservation-scroll::-webkit-scrollbar-thumb {
+  min-height: 48px;
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background:
+    linear-gradient(rgba(255, 242, 218, 0.78), rgba(205, 179, 144, 0.62))
+      padding-box,
+    linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.08))
+      border-box;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    0 0 14px rgba(255, 242, 218, 0.18);
+}
+
+.reservation-scroll::-webkit-scrollbar-thumb:hover {
+  background:
+    linear-gradient(rgba(255, 248, 231, 0.92), rgba(219, 198, 170, 0.76))
+      padding-box,
+    linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.12))
+      border-box;
+}

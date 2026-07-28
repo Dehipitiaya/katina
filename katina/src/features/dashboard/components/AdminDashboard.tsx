@@ -584,7 +584,7 @@ export function AdminDashboard({
             </div>
           </div>
 
-          <div className="mt-5 max-h-[68vh] overflow-y-auto overflow-x-hidden pr-1">
+          <div className="reservation-scroll mt-5 max-h-[68vh] overflow-y-auto overflow-x-hidden pr-2">
             <table className="w-full table-fixed border-separate border-spacing-y-2 text-center text-xs lg:text-sm">
               <colgroup>
                 <col className="w-[12%]" />
