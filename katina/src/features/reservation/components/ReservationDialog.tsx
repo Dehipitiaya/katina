@@ -178,7 +178,7 @@ export function ReservationDialog({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
-        className="relative max-h-[calc(100dvh-1rem)] w-full max-w-lg overflow-y-auto overflow-x-hidden overscroll-contain rounded-[30px] border border-white/78 bg-[linear-gradient(180deg,rgba(255,255,255,0.24),rgba(255,255,255,0.070)_48%,rgba(255,255,255,0.16))] p-4 pb-24 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.90),inset_0_0_0_1px_rgba(255,255,255,0.14),inset_0_-20px_48px_rgba(255,255,255,0.045),0_34px_100px_rgba(8,20,40,0.22)] backdrop-blur-[10px] backdrop-brightness-[1.18] backdrop-saturate-[1.55] before:pointer-events-none before:absolute before:inset-x-7 before:top-0 before:h-px before:bg-white/86 after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:bg-[linear-gradient(180deg,rgba(255,255,255,0.20),transparent_28%,rgba(255,255,255,0.070)_50%,transparent_56%,rgba(255,255,255,0.070)_100%)] after:opacity-85 sm:p-6 sm:pb-6 dark:border-white/34 dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0.055)_48%,rgba(255,255,255,0.12))] dark:text-white dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.32),inset_0_0_0_1px_rgba(255,255,255,0.10),inset_0_-20px_48px_rgba(255,255,255,0.030),0_34px_100px_rgba(0,0,0,0.26)] dark:before:bg-white/48 dark:after:bg-[linear-gradient(180deg,rgba(255,255,255,0.18),transparent_28%,rgba(255,255,255,0.060)_50%,transparent_56%,rgba(255,255,255,0.060)_100%)]"
+        className="relative flex max-h-[calc(100dvh-1rem)] w-full max-w-lg flex-col overflow-hidden rounded-[30px] border border-white/78 bg-[linear-gradient(180deg,rgba(255,255,255,0.24),rgba(255,255,255,0.070)_48%,rgba(255,255,255,0.16))] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.90),inset_0_0_0_1px_rgba(255,255,255,0.14),inset_0_-20px_48px_rgba(255,255,255,0.045),0_34px_100px_rgba(8,20,40,0.22)] backdrop-blur-[10px] backdrop-brightness-[1.18] backdrop-saturate-[1.55] before:pointer-events-none before:absolute before:inset-x-7 before:top-0 before:h-px before:bg-white/86 after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:bg-[linear-gradient(180deg,rgba(255,255,255,0.20),transparent_28%,rgba(255,255,255,0.070)_50%,transparent_56%,rgba(255,255,255,0.070)_100%)] after:opacity-85 dark:border-white/34 dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0.055)_48%,rgba(255,255,255,0.12))] dark:text-white dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.32),inset_0_0_0_1px_rgba(255,255,255,0.10),inset_0_-20px_48px_rgba(255,255,255,0.030),0_34px_100px_rgba(0,0,0,0.26)] dark:before:bg-white/48 dark:after:bg-[linear-gradient(180deg,rgba(255,255,255,0.18),transparent_28%,rgba(255,255,255,0.060)_50%,transparent_56%,rgba(255,255,255,0.060)_100%)]"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <button
@@ -190,7 +190,7 @@ export function ReservationDialog({
           <XIcon className="size-4" />
         </button>
 
-        <div className="relative z-10 flex flex-col gap-2">
+        <div className="relative z-10 flex flex-col gap-2 px-4 pb-3 pt-4 sm:px-6 sm:pt-6">
           <h2 id={titleId} className="text-xl font-medium text-[#fff2da]">
             Reserve responsibility
           </h2>
@@ -201,10 +201,14 @@ export function ReservationDialog({
           </p>
         </div>
 
-        <form className="relative z-10 grid gap-3 sm:gap-4" onSubmit={form.handleSubmit(onSubmit)}>
+        <form
+          className="relative z-10 flex min-h-0 flex-1 flex-col"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
           <input type="hidden" {...form.register("date")} />
           <input type="hidden" {...form.register("eventNumber")} />
 
+          <div className="reservation-scroll grid min-h-0 gap-3 overflow-y-auto px-4 pb-4 sm:gap-4 sm:px-6">
           <fieldset className="grid gap-2 text-sm font-medium">
             <legend>Responsibilities</legend>
             <div className="flex justify-end">
@@ -328,8 +332,9 @@ export function ReservationDialog({
               {form.formState.errors.root.message}
             </p>
           )}
+          </div>
 
-          <div className="sticky bottom-0 -mx-4 -mb-24 mt-1 border-t border-white/14 bg-[linear-gradient(180deg,rgba(24,18,14,0.12),rgba(24,18,14,0.44))] p-4 backdrop-blur-[14px] sm:static sm:m-0 sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-0">
+          <div className="border-t border-white/14 bg-[linear-gradient(180deg,rgba(24,18,14,0.08),rgba(24,18,14,0.36))] p-4 backdrop-blur-[14px] sm:px-6">
             <GlassButton
               type="submit"
               tone="primary"
