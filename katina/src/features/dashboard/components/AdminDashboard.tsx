@@ -437,6 +437,9 @@ export function AdminDashboard({
                 <p className="text-sm text-[#7b5a3b] dark:text-[#cdb390]">
                   Search by name, batch, or phone. Filters combine with search.
                 </p>
+                <div className="mt-3 inline-flex rounded-full border border-white/24 bg-white/7 px-4 py-2 text-sm font-semibold text-[#fff2da] shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-[14px]">
+                  {filteredRecords.length} of {records.length} reservations
+                </div>
               </div>
               <div className="grid gap-3 xl:min-w-[780px]">
                 <div className="grid gap-1.5">
@@ -556,10 +559,7 @@ export function AdminDashboard({
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#7b5a3b] dark:text-[#cdb390]">
-              <span>
-                Showing {filteredRecords.length} of {records.length} reservations
-              </span>
+            <div className="flex flex-wrap justify-end gap-2 text-xs text-[#7b5a3b] dark:text-[#cdb390]">
               {(query || filterDate || filterMonth || filterEvent) && (
                 <GlassButton
                   onClick={() => {
