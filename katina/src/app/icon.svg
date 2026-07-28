@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="70%">
+      <stop offset="0%" stop-color="#fff2da"/>
+      <stop offset="56%" stop-color="#d79a3a"/>
+      <stop offset="100%" stop-color="#7a3f16"/>
+    </radialGradient>
+    <linearGradient id="wheel" x1="14" x2="50" y1="10" y2="54">
+      <stop offset="0%" stop-color="#fff8e7"/>
+      <stop offset="45%" stop-color="#f0bf63"/>
+      <stop offset="100%" stop-color="#a85e20"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="18" fill="#17100c"/>
+  <circle cx="32" cy="32" r="25" fill="url(#bg)" opacity="0.18"/>
+  <circle cx="32" cy="32" r="21" fill="none" stroke="url(#wheel)" stroke-width="4"/>
+  <circle cx="32" cy="32" r="8" fill="none" stroke="#ffe9b3" stroke-width="4"/>
+  <circle cx="32" cy="32" r="3.2" fill="#fff2da"/>
+  <g stroke="#ffe9b3" stroke-width="3.2" stroke-linecap="round">
+    <path d="M32 12v13"/>
+    <path d="M32 39v13"/>
+    <path d="M12 32h13"/>
+    <path d="M39 32h13"/>
+    <path d="M17.9 17.9l9.2 9.2"/>
+    <path d="M36.9 36.9l9.2 9.2"/>
+    <path d="M46.1 17.9l-9.2 9.2"/>
+    <path d="M27.1 36.9l-9.2 9.2"/>
+  </g>
+  <circle cx="32" cy="32" r="21" fill="none" stroke="#fff8e7" stroke-width="1" opacity="0.55"/>
+</svg>
