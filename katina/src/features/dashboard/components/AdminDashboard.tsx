@@ -437,8 +437,16 @@ export function AdminDashboard({
                 <p className="text-sm text-[#7b5a3b] dark:text-[#cdb390]">
                   Search by name, batch, or phone. Filters combine with search.
                 </p>
-                <div className="mt-3 inline-flex rounded-full border border-white/24 bg-white/7 px-4 py-2 text-sm font-semibold text-[#fff2da] shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-[14px]">
-                  {filteredRecords.length} of {records.length} reservations
+                <div className="mt-4 flex min-h-24 w-full max-w-sm flex-col justify-center rounded-[24px] border border-white/24 bg-white/7 px-5 py-4 text-[#fff2da] shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_12px_30px_rgba(0,0,0,0.16)] backdrop-blur-[14px]">
+                  <p className="text-sm font-medium text-[#dbc6aa]">
+                    Reservations shown
+                  </p>
+                  <p className="mt-1 text-3xl font-semibold">
+                    {filteredRecords.length}
+                    <span className="ml-2 text-base font-medium text-[#cdb390]">
+                      of {records.length}
+                    </span>
+                  </p>
                 </div>
               </div>
               <div className="grid gap-3 xl:min-w-[780px]">
