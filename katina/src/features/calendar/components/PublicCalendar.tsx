@@ -32,6 +32,23 @@ export function PublicCalendar({
   const year = cursor.getFullYear();
   const month = cursor.getMonth() + 1;
   const days = useMemo(() => buildCalendarGrid(year, month), [year, month]);
+  const visibleDays = useMemo(() => {
+    const weeks = Array.from({ length: Math.ceil(days.length / 7) }, (_, index) =>
+      days.slice(index * 7, index * 7 + 7),
+    );
+
+    return weeks
+      .filter((week) =>
+        week.some(
+          (day) =>
+            day.isCurrentMonth &&
+            !day.isPast &&
+            !day.isBeforeReservationStart &&
+            !day.isAfterReservationEnd,
+        ),
+      )
+      .flat();
+  }, [days]);
   const reservationsByDate = useMemo(() => {
     return reservations.reduce<Record<string, ReservationSummary[]>>(
       (acc, reservation) => {
@@ -156,7 +173,7 @@ export function PublicCalendar({
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-7">
-          {days.map((day) => (
+          {visibleDays.map((day) => (
             (() => {
               const holidayName = getHolidayName(day.dateKey);
               const weekday = day.date.getDay();
