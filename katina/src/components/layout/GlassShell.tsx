@@ -17,7 +17,7 @@ export function GlassShell({
       )}
     >
       <div
-        className="pointer-events-none absolute inset-0 bg-[length:auto_44rem] bg-top bg-no-repeat opacity-66 saturate-[1.04] contrast-[1.03] brightness-[1.02] sm:fixed sm:bg-[length:auto_62rem]"
+        className="pointer-events-none fixed inset-0 bg-[length:auto_44rem] bg-top bg-no-repeat opacity-66 saturate-[1.04] contrast-[1.03] brightness-[1.02] sm:bg-[length:auto_62rem]"
         style={{
           backgroundImage:
             "image-set(url('/background-01.avif') type('image/avif'), url('/background-01.webp') type('image/webp'), url('/background-01.png') type('image/png'))",
