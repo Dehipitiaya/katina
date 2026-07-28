@@ -34,7 +34,6 @@ export function AdminDashboard({
   const router = useRouter();
   const [records, setRecords] = useState(reservations);
   const [query, setQuery] = useState("");
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [filterDate, setFilterDate] = useState("");
   const [filterMonth, setFilterMonth] = useState("");
   const [filterEvent, setFilterEvent] = useState("");
@@ -84,28 +83,6 @@ export function AdminDashboard({
         return first.eventNumber - second.eventNumber;
       });
   }, [records, query, filterDate, filterMonth, filterEvent]);
-
-  const searchSuggestions = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    const needleDigits = query.replace(/[^\d]/g, "");
-
-    if (!needle) {
-      return [];
-    }
-
-    return records
-      .filter((record) => {
-        const phoneDigits = record.phone.replace(/[^\d]/g, "");
-
-        return (
-          record.name.toLowerCase().includes(needle) ||
-          record.batch.toLowerCase().includes(needle) ||
-          record.phone.toLowerCase().includes(needle) ||
-          Boolean(needleDigits && phoneDigits.includes(needleDigits))
-        );
-      })
-      .slice(0, 6);
-  }, [records, query]);
 
   const dateFilterOptions = useMemo(() => {
     return Array.from(
@@ -458,38 +435,10 @@ export function AdminDashboard({
                     <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
                     <GlassInput
                       value={query}
-                      onChange={(event) => {
-                        setQuery(event.target.value);
-                        setShowSuggestions(true);
-                      }}
-                      onFocus={() => setShowSuggestions(true)}
-                      onBlur={() => {
-                        window.setTimeout(() => setShowSuggestions(false), 120);
-                      }}
+                      onChange={(event) => setQuery(event.target.value)}
                       placeholder="Search name, batch, phone"
                       className="pl-9"
                     />
-                    {showSuggestions && searchSuggestions.length > 0 && (
-                      <div className="absolute left-0 right-0 top-12 z-30 overflow-hidden rounded-[18px] border border-white/90 bg-white/34 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.96),inset_1px_0_0_rgba(255,255,255,0.42),0_18px_44px_rgba(8,20,40,0.12)] backdrop-blur-[42px] dark:border-white/24 dark:bg-black/28">
-                        {searchSuggestions.map((record) => (
-                          <button
-                            key={record.id}
-                            type="button"
-                            onMouseDown={(event) => event.preventDefault()}
-                            onClick={() => {
-                              setQuery(record.name);
-                              setShowSuggestions(false);
-                            }}
-                            className="grid w-full gap-0.5 rounded-2xl px-3 py-2 text-left text-xs text-slate-700 transition hover:bg-white/60 dark:text-slate-200 dark:hover:bg-white/10"
-                          >
-                            <span className="font-medium">{record.name}</span>
-                            <span className="text-slate-500 dark:text-slate-400">
-                              {record.batch} · {record.phone}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 </div>
 
