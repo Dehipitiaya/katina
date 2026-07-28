@@ -308,38 +308,12 @@ export function AdminDashboard({
             <Home className="size-4" />
             Home
           </GlassButton>
-          <GlassButton onClick={downloadBackup}>
-            <Download className="size-4" />
-            Backup
-          </GlassButton>
-          <GlassButton onClick={() => restoreInputRef.current?.click()}>
-            <Upload className="size-4" />
-            Restore
-          </GlassButton>
-          <input
-            ref={restoreInputRef}
-            type="file"
-            accept="application/json,.json"
-            className="hidden"
-            onChange={(event) => {
-              const file = event.target.files?.[0];
-
-              if (file) {
-                void restoreBackup(file);
-              }
-            }}
-          />
           <GlassButton onClick={logout}>
             <LogOut className="size-4" />
             Logout
           </GlassButton>
         </div>
       </header>
-      {backupStatus && (
-        <div className="rounded-2xl border border-white/20 bg-white/7 px-4 py-3 text-sm font-medium text-[#fff2da] shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-[18px]">
-          {backupStatus}
-        </div>
-      )}
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
@@ -363,6 +337,47 @@ export function AdminDashboard({
           icon={<CalendarDays className="size-5" />}
         />
       </div>
+
+      <GlassCard className="p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-[#2e1b10] dark:text-[#fff2da]">
+              Data safety
+            </h2>
+            <p className="text-sm text-[#7b5a3b] dark:text-[#cdb390]">
+              Download a backup or restore missing reservations from a backup file.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <GlassButton onClick={downloadBackup}>
+              <Download className="size-4" />
+              Backup
+            </GlassButton>
+            <GlassButton onClick={() => restoreInputRef.current?.click()}>
+              <Upload className="size-4" />
+              Restore
+            </GlassButton>
+            <input
+              ref={restoreInputRef}
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+
+                if (file) {
+                  void restoreBackup(file);
+                }
+              }}
+            />
+          </div>
+        </div>
+        {backupStatus && (
+          <div className="mt-3 rounded-2xl border border-white/20 bg-white/7 px-4 py-3 text-sm font-medium text-[#fff2da] shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-[18px]">
+            {backupStatus}
+          </div>
+        )}
+      </GlassCard>
 
       <div className="grid gap-6">
         <GlassCard className="p-5">
@@ -454,75 +469,104 @@ export function AdminDashboard({
                   Search by name, batch, or phone. Filters combine with search.
                 </p>
               </div>
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 xl:min-w-[760px]">
-                <div className="relative">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-                  <GlassInput
-                    value={query}
-                    onChange={(event) => {
-                      setQuery(event.target.value);
-                      setShowSuggestions(true);
-                    }}
-                    onFocus={() => setShowSuggestions(true)}
-                    onBlur={() => {
-                      window.setTimeout(() => setShowSuggestions(false), 120);
-                    }}
-                    placeholder="Name, batch, phone"
-                    className="pl-9"
-                  />
-                  {showSuggestions && searchSuggestions.length > 0 && (
-                    <div className="absolute left-0 right-0 top-12 z-30 overflow-hidden rounded-[18px] border border-white/90 bg-white/34 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.96),inset_1px_0_0_rgba(255,255,255,0.42),0_18px_44px_rgba(8,20,40,0.12)] backdrop-blur-[42px] dark:border-white/24 dark:bg-black/28">
-                      {searchSuggestions.map((record) => (
-                        <button
-                          key={record.id}
-                          type="button"
-                          onMouseDown={(event) => event.preventDefault()}
-                          onClick={() => {
-                            setQuery(record.name);
-                            setShowSuggestions(false);
-                          }}
-                          className="grid w-full gap-0.5 rounded-2xl px-3 py-2 text-left text-xs text-slate-700 transition hover:bg-white/60 dark:text-slate-200 dark:hover:bg-white/10"
-                        >
-                          <span className="font-medium">{record.name}</span>
-                          <span className="text-slate-500 dark:text-slate-400">
-                            {record.batch} · {record.phone}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
+              <div className="grid gap-3 xl:min-w-[780px]">
+                <div className="grid gap-1.5">
+                  <p className="px-1 text-xs font-semibold uppercase tracking-normal text-[#7b5a3b] dark:text-[#cdb390]">
+                    Search
+                  </p>
+                  <div className="relative">
+                    <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                    <GlassInput
+                      value={query}
+                      onChange={(event) => {
+                        setQuery(event.target.value);
+                        setShowSuggestions(true);
+                      }}
+                      onFocus={() => setShowSuggestions(true)}
+                      onBlur={() => {
+                        window.setTimeout(() => setShowSuggestions(false), 120);
+                      }}
+                      placeholder="Search name, batch, phone"
+                      className="pl-9"
+                    />
+                    {showSuggestions && searchSuggestions.length > 0 && (
+                      <div className="absolute left-0 right-0 top-12 z-30 overflow-hidden rounded-[18px] border border-white/90 bg-white/34 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.96),inset_1px_0_0_rgba(255,255,255,0.42),0_18px_44px_rgba(8,20,40,0.12)] backdrop-blur-[42px] dark:border-white/24 dark:bg-black/28">
+                        {searchSuggestions.map((record) => (
+                          <button
+                            key={record.id}
+                            type="button"
+                            onMouseDown={(event) => event.preventDefault()}
+                            onClick={() => {
+                              setQuery(record.name);
+                              setShowSuggestions(false);
+                            }}
+                            className="grid w-full gap-0.5 rounded-2xl px-3 py-2 text-left text-xs text-slate-700 transition hover:bg-white/60 dark:text-slate-200 dark:hover:bg-white/10"
+                          >
+                            <span className="font-medium">{record.name}</span>
+                            <span className="text-slate-500 dark:text-slate-400">
+                              {record.batch} · {record.phone}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <GlassInput
-                  type="date"
-                  value={filterDate}
-                  onChange={(event) => setFilterDate(event.target.value)}
-                  aria-label="Filter by date"
-                />
-                <GlassInput
-                  type="month"
-                  value={filterMonth}
-                  onChange={(event) => setFilterMonth(event.target.value)}
-                  aria-label="Filter by month"
-                />
-                <select
-                  value={filterEvent}
-                  onChange={(event) => setFilterEvent(event.target.value)}
-                  aria-label="Filter by event"
-                  className="h-11 rounded-[18px] border border-white/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.44),rgba(255,255,255,0.10)_48%,rgba(255,255,255,0.32))] px-4 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_1px_0_0_rgba(255,255,255,0.56)] outline-none backdrop-blur-[38px] dark:border-white/26 dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.13),rgba(255,255,255,0.035)_48%,rgba(255,255,255,0.075))] dark:text-white dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.22)]"
-                >
-                  <option value="" className="bg-[#21150f] text-[#fff2da]">
-                    All events
-                  </option>
-                  {RESPONSIBILITY_EVENTS.map((event) => (
-                    <option
-                      key={event.number}
-                      value={event.number}
-                      className="bg-[#21150f] text-[#fff2da]"
+
+                <div className="grid gap-1.5">
+                  <p className="px-1 text-xs font-semibold uppercase tracking-normal text-[#7b5a3b] dark:text-[#cdb390]">
+                    Filters
+                  </p>
+                  <div className="grid gap-2 sm:grid-cols-3">
+                    <div className="relative">
+                      {!filterMonth && (
+                        <span className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-sm text-slate-400">
+                          Select month
+                        </span>
+                      )}
+                      <GlassInput
+                        type="month"
+                        value={filterMonth}
+                        onChange={(event) => setFilterMonth(event.target.value)}
+                        aria-label="Filter by month"
+                        className={cn(!filterMonth && "text-transparent")}
+                      />
+                    </div>
+                    <div className="relative">
+                      {!filterDate && (
+                        <span className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-sm text-slate-400">
+                          Select date
+                        </span>
+                      )}
+                      <GlassInput
+                        type="date"
+                        value={filterDate}
+                        onChange={(event) => setFilterDate(event.target.value)}
+                        aria-label="Filter by date"
+                        className={cn(!filterDate && "text-transparent")}
+                      />
+                    </div>
+                    <select
+                      value={filterEvent}
+                      onChange={(event) => setFilterEvent(event.target.value)}
+                      aria-label="Filter by event"
+                      className="h-11 rounded-[18px] border border-white/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.44),rgba(255,255,255,0.10)_48%,rgba(255,255,255,0.32))] px-4 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_1px_0_0_rgba(255,255,255,0.56)] outline-none backdrop-blur-[38px] dark:border-white/26 dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.13),rgba(255,255,255,0.035)_48%,rgba(255,255,255,0.075))] dark:text-white dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.22)]"
                     >
-                      {event.number}. {event.name}
-                    </option>
-                  ))}
-                </select>
+                      <option value="" className="bg-[#21150f] text-[#fff2da]">
+                        Select event
+                      </option>
+                      {RESPONSIBILITY_EVENTS.map((event) => (
+                        <option
+                          key={event.number}
+                          value={event.number}
+                          className="bg-[#21150f] text-[#fff2da]"
+                        >
+                          {event.number}. {event.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
 
