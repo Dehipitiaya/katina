@@ -6,6 +6,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, parseISO } from "date-fns";
 import { XIcon } from "lucide-react";
+import { toast } from "sonner";
 import type { z } from "zod";
 
 import { RESPONSIBILITY_EVENTS, type EventNumber } from "@/constants/events";
@@ -139,6 +140,11 @@ export function ReservationDialog({
     }
 
     onReserved();
+    toast.success(
+      selectedEventNumbers.length === 1
+        ? "Reservation saved."
+        : `${selectedEventNumbers.length} reservations saved.`,
+    );
     onOpenChange(false);
   }
 

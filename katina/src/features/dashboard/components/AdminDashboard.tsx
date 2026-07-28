@@ -15,6 +15,7 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import { GlassButton } from "@/components/ui/glass-button";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -197,6 +198,7 @@ export function AdminDashboard({
       );
       setEditingId(null);
       setEditError(null);
+      toast.success("Reservation updated.");
       return;
     }
 
@@ -212,6 +214,7 @@ export function AdminDashboard({
     if (result.success) {
       setRecords((current) => current.filter((record) => record.id !== id));
       setDeleteTarget(null);
+      toast.success("Reservation deleted.");
     }
   }
 
