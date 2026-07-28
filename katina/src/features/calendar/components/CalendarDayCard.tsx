@@ -63,7 +63,7 @@ export function CalendarDayCard({
     return (
       <div
         aria-hidden="true"
-        className="min-h-28 rounded-[24px] border border-white/22 bg-white/[0.04] dark:border-white/[0.04] dark:bg-white/[0.015]"
+        className="hidden min-h-28 rounded-[24px] border border-white/22 bg-white/[0.04] sm:block dark:border-white/[0.04] dark:bg-white/[0.015]"
       />
     );
   }
@@ -81,6 +81,7 @@ export function CalendarDayCard({
       }
       className={cn(
         "group relative min-h-28 overflow-hidden rounded-[24px] border p-3 backdrop-blur-[16px] backdrop-saturate-[1.55] transition duration-200 before:pointer-events-none before:absolute before:inset-x-5 before:top-0 before:h-px before:bg-white/74 after:pointer-events-none after:absolute after:inset-0 after:bg-[linear-gradient(180deg,rgba(255,255,255,0.12),transparent_27%,rgba(255,255,255,0.050)_50%,transparent_55%,rgba(255,255,255,0.055)_100%)] after:opacity-80 hover:-translate-y-0.5 dark:before:bg-white/22 dark:after:bg-[linear-gradient(180deg,rgba(255,255,255,0.075),transparent_27%,rgba(255,255,255,0.034)_50%,transparent_55%,rgba(255,255,255,0.035)_100%)]",
+        isPast && "hidden sm:block",
         canReserveDay && "cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#66b3ff]/35",
         isMuted
           ? "border-2 border-slate-500/80 bg-[linear-gradient(180deg,rgba(148,163,184,0.30),rgba(51,65,85,0.18))] text-slate-600 shadow-none grayscale hover:translate-y-0 dark:border-slate-500/70 dark:bg-[linear-gradient(180deg,rgba(100,116,139,0.22),rgba(15,23,42,0.15))] dark:text-slate-500"

@@ -128,3 +128,21 @@
     @apply font-sans;
   }
 }
+
+@media (max-width: 639px) {
+  .backdrop-blur-\[16px\],
+  .backdrop-blur-\[18px\],
+  .backdrop-blur-\[22px\],
+  .backdrop-blur-\[32px\],
+  .backdrop-blur-\[34px\],
+  .backdrop-blur-\[38px\],
+  .backdrop-blur-\[42px\] {
+    --tw-backdrop-blur: blur(8px);
+    -webkit-backdrop-filter: blur(8px) saturate(1.25);
+    backdrop-filter: blur(8px) saturate(1.25);
+  }
+
+  .hover\:-translate-y-0\.5:hover {
+    transform: none;
+  }
+}
