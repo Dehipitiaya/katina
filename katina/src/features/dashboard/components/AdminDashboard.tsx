@@ -107,6 +107,16 @@ export function AdminDashboard({
       .slice(0, 6);
   }, [records, query]);
 
+  const dateFilterOptions = useMemo(() => {
+    return Array.from(
+      new Set(
+        records
+          .filter((record) => !filterMonth || record.date.startsWith(filterMonth))
+          .map((record) => record.date),
+      ),
+    ).sort((first, second) => first.localeCompare(second));
+  }, [records, filterMonth]);
+
   const upcomingDays = useMemo(() => {
     const today = new Date();
 
@@ -338,47 +348,6 @@ export function AdminDashboard({
         />
       </div>
 
-      <GlassCard className="p-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-[#2e1b10] dark:text-[#fff2da]">
-              Data safety
-            </h2>
-            <p className="text-sm text-[#7b5a3b] dark:text-[#cdb390]">
-              Download a backup or restore missing reservations from a backup file.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <GlassButton onClick={downloadBackup}>
-              <Download className="size-4" />
-              Backup
-            </GlassButton>
-            <GlassButton onClick={() => restoreInputRef.current?.click()}>
-              <Upload className="size-4" />
-              Restore
-            </GlassButton>
-            <input
-              ref={restoreInputRef}
-              type="file"
-              accept="application/json,.json"
-              className="hidden"
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-
-                if (file) {
-                  void restoreBackup(file);
-                }
-              }}
-            />
-          </div>
-        </div>
-        {backupStatus && (
-          <div className="mt-3 rounded-2xl border border-white/20 bg-white/7 px-4 py-3 text-sm font-medium text-[#fff2da] shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-[18px]">
-            {backupStatus}
-          </div>
-        )}
-      </GlassCard>
-
       <div className="grid gap-6">
         <GlassCard className="p-5">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -458,9 +427,9 @@ export function AdminDashboard({
           )}
         </GlassCard>
 
-        <GlassCard className="p-5">
+        <GlassCard className="p-4 sm:p-5">
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
+            <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-[#2e1b10] dark:text-[#fff2da]">
                   Reservation management
@@ -527,25 +496,42 @@ export function AdminDashboard({
                       <GlassInput
                         type="month"
                         value={filterMonth}
-                        onChange={(event) => setFilterMonth(event.target.value)}
+                        onChange={(event) => {
+                          const nextMonth = event.target.value;
+
+                          setFilterMonth(nextMonth);
+                          setFilterDate((currentDate) =>
+                            currentDate && !currentDate.startsWith(nextMonth)
+                              ? ""
+                              : currentDate,
+                          );
+                        }}
                         aria-label="Filter by month"
                         className={cn(!filterMonth && "text-transparent")}
                       />
                     </div>
-                    <div className="relative">
-                      {!filterDate && (
-                        <span className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-sm text-slate-400">
-                          Select date
-                        </span>
+                    <select
+                      value={filterDate}
+                      onChange={(event) => setFilterDate(event.target.value)}
+                      aria-label="Filter by date"
+                      className={cn(
+                        "h-11 rounded-[18px] border border-white/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.44),rgba(255,255,255,0.10)_48%,rgba(255,255,255,0.32))] px-4 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_1px_0_0_rgba(255,255,255,0.56)] outline-none backdrop-blur-[38px] dark:border-white/26 dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.13),rgba(255,255,255,0.035)_48%,rgba(255,255,255,0.075))] dark:text-white dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.22)]",
+                        !filterDate && "text-slate-400 dark:text-slate-400",
                       )}
-                      <GlassInput
-                        type="date"
-                        value={filterDate}
-                        onChange={(event) => setFilterDate(event.target.value)}
-                        aria-label="Filter by date"
-                        className={cn(!filterDate && "text-transparent")}
-                      />
-                    </div>
+                    >
+                      <option value="" className="bg-[#21150f] text-[#fff2da]">
+                        Select date
+                      </option>
+                      {dateFilterOptions.map((date) => (
+                        <option
+                          key={date}
+                          value={date}
+                          className="bg-[#21150f] text-[#fff2da]"
+                        >
+                          {format(parseISO(date), "MMM d, yyyy")}
+                        </option>
+                      ))}
+                    </select>
                     <select
                       value={filterEvent}
                       onChange={(event) => setFilterEvent(event.target.value)}
@@ -680,6 +666,46 @@ export function AdminDashboard({
         </GlassCard>
 
       </div>
+      <GlassCard className="p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-[#2e1b10] dark:text-[#fff2da]">
+              Data safety
+            </h2>
+            <p className="text-sm text-[#7b5a3b] dark:text-[#cdb390]">
+              Download a backup or restore missing reservations from a backup file.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <GlassButton onClick={downloadBackup}>
+              <Download className="size-4" />
+              Backup
+            </GlassButton>
+            <GlassButton onClick={() => restoreInputRef.current?.click()}>
+              <Upload className="size-4" />
+              Restore
+            </GlassButton>
+            <input
+              ref={restoreInputRef}
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+
+                if (file) {
+                  void restoreBackup(file);
+                }
+              }}
+            />
+          </div>
+        </div>
+        {backupStatus && (
+          <div className="mt-3 rounded-2xl border border-white/20 bg-white/7 px-4 py-3 text-sm font-medium text-[#fff2da] shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-[18px]">
+            {backupStatus}
+          </div>
+        )}
+      </GlassCard>
       {editingRecord && (
         <div
           className="fixed inset-0 z-[100] grid place-items-center bg-black/18 p-4 backdrop-blur-[18px]"
