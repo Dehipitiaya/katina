@@ -97,7 +97,7 @@ export async function reserveResponsibility(input: ReservationCreateInput) {
   }
 
   if (isAfterReservationEndDate(input.date)) {
-    throw new Error("Reservations are only available up to October 25, 2026.");
+    throw new Error("Reservations are only available up to October 31, 2026.");
   }
 
   const existing = await findReservationByDateAndEvent(input.date, input.eventNumber);

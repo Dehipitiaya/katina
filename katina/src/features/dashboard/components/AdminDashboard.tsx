@@ -317,7 +317,7 @@ export function AdminDashboard({
           icon={<CalendarDays className="size-5" />}
         />
         <StatCard
-          label="Open slots until Oct 25"
+          label="Open slots until Oct 31"
           value={stats.availableResponsibilities}
           icon={<Clock3 className="size-5" />}
         />
