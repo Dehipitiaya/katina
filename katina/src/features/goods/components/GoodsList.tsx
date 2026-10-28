@@ -60,7 +60,7 @@ function GoodsItemCard({
   return (
     <li
       className={cn(
-        "rounded-[22px] border p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-[16px] transition",
+        "min-w-0 rounded-[22px] border p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-[16px] transition",
         item.isComplete
           ? "border-2 border-[#ff6b4a]/85 bg-[#ff6b4a]/22"
           : "border-white/22 bg-white/8",
@@ -214,7 +214,7 @@ export function GoodsList({ initialItems }: { initialItems: PublicDonationItem[]
               {group.category}
             </h2>
           )}
-          <ul className="grid gap-2 sm:grid-cols-2">
+          <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {group.items.map((item) => (
               <GoodsItemCard key={item.id} item={item} onPledge={setSelected} />
             ))}
