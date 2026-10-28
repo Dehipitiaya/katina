@@ -12,7 +12,7 @@ export function GlassShell({
   return (
     <main
       className={cn(
-        "relative min-h-screen overflow-hidden bg-[linear-gradient(135deg,#1b1511_0%,#182132_46%,#241813_100%)] text-white",
+        "relative min-h-screen overflow-clip bg-[linear-gradient(135deg,#1b1511_0%,#182132_46%,#241813_100%)] text-white",
         className,
       )}
     >

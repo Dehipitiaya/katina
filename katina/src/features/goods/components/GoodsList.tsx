@@ -9,10 +9,18 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { GlassInput } from "@/components/ui/glass-input";
 import { GlassPillLink, glassPillClassName } from "@/components/ui/glass-pill-link";
 import { ContributorsDropdown } from "@/features/goods/components/ContributorsDropdown";
+import {
+  BackToTopButton,
+  CategoryNav,
+  type GoodsSection,
+} from "@/features/goods/components/GoodsNavigation";
 import { PledgeDialog } from "@/features/goods/components/PledgeDialog";
 import { formatItemAmount, groupByCategory } from "@/features/goods/format";
 import { cn } from "@/lib/utils";
 import type { PublicDonationItem } from "@/types/donation";
+
+/** Nav label for items listed without a section heading. */
+const OTHER_SECTION_LABEL = "අනෙකුත්";
 
 function SharedProgress({ item }: { item: PublicDonationItem }) {
   const target = item.targetAmount ?? 0;
@@ -108,6 +116,16 @@ export function GoodsList({ initialItems }: { initialItems: PublicDonationItem[]
     return groupByCategory(visible);
   }, [items, openOnly, query]);
 
+  const sections = useMemo<GoodsSection[]>(
+    () =>
+      visibleGroups.map((group, index) => ({
+        id: `goods-section-${index}`,
+        label: group.category ?? OTHER_SECTION_LABEL,
+        count: group.items.length,
+      })),
+    [visibleGroups],
+  );
+
   const completedCount = items.filter((item) => item.isComplete).length;
 
   function refresh() {
@@ -183,8 +201,14 @@ export function GoodsList({ initialItems }: { initialItems: PublicDonationItem[]
         </GlassButton>
       </div>
 
+      <CategoryNav sections={sections} />
+
       {visibleGroups.map((group, index) => (
-        <GlassCard key={`${group.category ?? "none"}-${index}`} className="p-4 sm:p-5">
+        <GlassCard
+          key={`${group.category ?? "none"}-${index}`}
+          id={sections[index].id}
+          className="scroll-mt-32 p-4 sm:p-5"
+        >
           {group.category && (
             <h2 className="mb-4 px-1 text-center text-xl font-semibold text-[#fff2da] sm:text-2xl">
               {group.category}
@@ -203,6 +227,8 @@ export function GoodsList({ initialItems }: { initialItems: PublicDonationItem[]
           {items.length === 0 ? "No items have been added yet." : "No items match your search."}
         </GlassCard>
       )}
+
+      <BackToTopButton />
 
       <PledgeDialog
         item={selected}
