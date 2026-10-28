@@ -1,4 +1,5 @@
 import { isAdminAuthenticated } from "@/lib/auth";
+import { getDonationsBackup } from "@/services/donation-service";
 import { createReservationsBackup } from "@/services/reservation-service";
 
 export async function GET() {
@@ -9,7 +10,10 @@ export async function GET() {
     );
   }
 
-  const backup = await createReservationsBackup();
+  const backup = {
+    ...(await createReservationsBackup()),
+    ...(await getDonationsBackup()),
+  };
   const date = backup.exportedAt.slice(0, 10);
 
   return Response.json(backup, {

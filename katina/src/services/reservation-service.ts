@@ -21,6 +21,7 @@ import {
   isPastDateKey,
   toDateKey,
 } from "@/lib/dates";
+import { normalizePhone } from "@/lib/phone";
 import {
   createReservation,
   deleteReservation,
@@ -37,12 +38,6 @@ import {
 import type { ReservationRecord, ReservationSummary } from "@/types/reservation";
 import type { BackupFileInput } from "@/validators/backup";
 import type { ReservationCreateInput, ReservationUpdateInput } from "@/validators/reservation";
-
-function normalizePhone(phone: string) {
-  const trimmed = phone.trim();
-  const plus = trimmed.startsWith("+") ? "+" : "";
-  return `${plus}${trimmed.replace(/[^\d]/g, "")}`;
-}
 
 function toSummary(reservation: {
   id: string;

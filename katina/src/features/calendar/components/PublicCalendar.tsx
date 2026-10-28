@@ -2,10 +2,11 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { addMonths, format, subMonths } from "date-fns";
-import { ChevronLeft, ChevronRight, ShieldCheck } from "lucide-react";
+import { ChevronLeft, ChevronRight, Gift, ShieldCheck } from "lucide-react";
 
 import { GlassButton } from "@/components/ui/glass-button";
 import { GlassCard } from "@/components/ui/glass-card";
+import { GlassPillLink, glassPillClassName } from "@/components/ui/glass-pill-link";
 import { RESPONSIBILITY_EVENTS, type EventNumber } from "@/constants/events";
 import { getHolidayName } from "@/constants/holidays";
 import { buildCalendarGrid } from "@/lib/dates";
@@ -86,15 +87,16 @@ export function PublicCalendar({
 
   return (
     <section className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <a
-        href="/admin/login"
-        className="fixed right-4 top-4 z-50 inline-flex h-11 items-center gap-2 rounded-full border border-white/74 bg-[linear-gradient(180deg,rgba(255,255,255,0.22),rgba(255,255,255,0.045)_48%,rgba(255,255,255,0.13))] px-4 text-sm font-medium text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.86),inset_0_0_0_1px_rgba(255,255,255,0.12),0_8px_24px_rgba(8,20,40,0.08)] backdrop-blur-[16px] backdrop-saturate-[1.45] transition hover:bg-white/24 dark:border-white/24 dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.075),rgba(255,255,255,0.018)_48%,rgba(255,255,255,0.040))] dark:text-white dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_10px_26px_rgba(0,0,0,0.34)]"
-      >
+      <GlassPillLink href="/goods" className="fixed left-4 top-4 z-50">
+        <Gift className="size-4" />
+        කඨින ද්‍රව්‍ය
+      </GlassPillLink>
+      <a href="/admin/login" className={cn(glassPillClassName, "fixed right-4 top-4 z-50")}>
         <ShieldCheck className="size-4" />
         Admin
       </a>
 
-      <header className="flex flex-col items-center justify-center py-8 text-center">
+      <header className="flex flex-col items-center justify-center pb-8 pt-14 text-center sm:py-8">
         <h1 className="text-4xl font-semibold tracking-normal text-[#2e1b10] sm:text-6xl dark:text-[#fff2da]">
           අයං වස්සාන කාලෝ
         </h1>

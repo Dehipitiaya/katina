@@ -23,11 +23,39 @@ export const reservationBackupSchema = z.object({
   updatedAt: isoDateSchema,
 });
 
+export const donationItemBackupSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  category: z.string().nullable(),
+  note: z.string().nullable(),
+  type: z.enum(["ITEM", "QUANTITY", "MONEY"]),
+  targetAmount: z.number().nullable(),
+  unit: z.string().nullable(),
+  sortOrder: z.number().int(),
+  createdAt: isoDateSchema,
+  updatedAt: isoDateSchema,
+});
+
+export const donationPledgeBackupSchema = z.object({
+  id: z.string().min(1),
+  itemId: z.string().min(1),
+  name: z.string().min(1),
+  phone: z.string().min(1),
+  batch: z.string().min(1),
+  faculty: z.string().nullable(),
+  amount: z.number().nullable(),
+  createdAt: isoDateSchema,
+  updatedAt: isoDateSchema,
+});
+
 export const backupFileSchema = z.object({
   app: z.literal("katina-responsibility-calendar"),
   version: z.literal(1),
   exportedAt: isoDateSchema,
   reservations: z.array(reservationBackupSchema),
+  // Optional so backups taken before the goods list existed still restore.
+  donationItems: z.array(donationItemBackupSchema).optional(),
+  donationPledges: z.array(donationPledgeBackupSchema).optional(),
 });
 
 export type BackupFileInput = z.infer<typeof backupFileSchema>;

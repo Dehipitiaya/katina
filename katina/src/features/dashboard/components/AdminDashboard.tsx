@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   Clock3,
   Download,
+  Gift,
   Home,
   LogOut,
   Pencil,
@@ -297,6 +298,10 @@ export function AdminDashboard({
           <GlassButton onClick={() => router.push("/")} className="w-full sm:w-auto">
             <Home className="size-4" />
             Home
+          </GlassButton>
+          <GlassButton onClick={() => router.push("/admin/goods")} className="w-full sm:w-auto">
+            <Gift className="size-4" />
+            Goods list
           </GlassButton>
           <GlassButton onClick={logout} className="w-full sm:w-auto">
             <LogOut className="size-4" />

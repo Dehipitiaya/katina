@@ -1,5 +1,6 @@
 import { fail, ok, zodErrors } from "@/lib/api-response";
 import { isAdminAuthenticated } from "@/lib/auth";
+import { restoreDonationsBackup } from "@/services/donation-service";
 import { restoreReservationsBackup } from "@/services/reservation-service";
 import { backupFileSchema } from "@/validators/backup";
 
@@ -21,12 +22,13 @@ export async function POST(request: Request) {
 
   try {
     const result = await restoreReservationsBackup(parsed.data);
+    const goods = await restoreDonationsBackup(parsed.data);
 
     return ok(
       {
         reservations: result.reservations,
-        importedCount: result.importedCount,
-        skippedCount: result.skippedCount,
+        importedCount: result.importedCount + goods.importedCount,
+        skippedCount: result.skippedCount + goods.skippedCount,
         count: result.reservations.length,
       },
       undefined,

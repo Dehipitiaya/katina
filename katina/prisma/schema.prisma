@@ -27,3 +27,34 @@ model Reservation {
   @@unique([date, eventNumber])
   @@index([date])
 }
+
+model DonationItem {
+  id           String           @id @default(cuid())
+  name         String
+  category     String?
+  note         String?
+  type         String           @default("ITEM")
+  targetAmount Float?
+  unit         String?
+  sortOrder    Int              @default(0)
+  pledges      DonationPledge[]
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([sortOrder])
+}
+
+model DonationPledge {
+  id        String       @id @default(cuid())
+  itemId    String
+  item      DonationItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  name      String
+  phone     String
+  batch     String
+  faculty   String?
+  amount    Float?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@index([itemId])
+}
